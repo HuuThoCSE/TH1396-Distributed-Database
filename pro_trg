@@ -1,0 +1,316 @@
+use QLHS --CÂU 6
+ALTER PROCEDURE pro_HS_Ins @MAHS nvarchar(15)
+  , @HOTEN nvarchar(50)
+  , @NGAYSINH date
+  , @GIOITINH BIT
+  , @DIACHI nvarchar(100)
+  , @NOISINH nvarchar(10) AS --Kiểm tra PK ( Không đc bỏ trống và chưa có trong table)
+IF (@MAHS <> ''
+AND NOT (EXISTS (
+SELECT
+    *
+FROM HOCSINH
+WHERE MAHS = @MAHS)))
+BEGIN --Kiểm tra  FK()
+IF (EXISTS (
+SELECT
+    MAT
+FROM TINH
+WHERE MAT = @NOISINH))
+BEGIN --Kiem tra CHECK
+IF (@NGAYSINH <> ''
+AND YEAR(GETDATE()) - YEAR(@NGAYSINH) > 12)
+BEGIN
+
+INSERT INTO HOCSINH (
+    MAHS
+  , HOTEN
+  , NGAYSINH
+  , GIOITINH
+  , DCHI
+  , NOISINH
+)
+VALUES
+    (@MAHS, @HOTEN, @NGAYSINH, @GIOITINH, @DIACHI, @NOISINH)
+END
+    ELSE PRINT N 'KHONG THỂ THÊM VÌ CHƯA ĐỦ 12 TUỔI'
+END
+    ELSE PRINT N 'ĐÃ SAI KHÓA NGOẠI'
+END
+    ELSE PRINT N 'ĐÃ SAI KHÓA CHÍNH' Go --CÂU 7
+ALTER PROCEDURE pro_HS_update @MAHS nvarchar(15)
+  , @HOTEN nvarchar(50)
+  , @NGAYSINH date
+  , @GIOITINH BIT
+  , @DIACHI nvarchar(100)
+  , @NOISINH nvarchar(10) AS --Kiểm tra PK ( Không đc bỏ trống )
+IF (@MAHS <> '')
+BEGIN --Kiểm tra  FK()
+IF (EXISTS (
+SELECT
+    MAT
+FROM TINH
+WHERE MAT = @NOISINH))
+BEGIN --Kiem tra CHECK
+IF (@NGAYSINH <> ''
+AND YEAR(GETDATE()) - YEAR(@NGAYSINH) > 12)
+BEGIN
+
+UPDATE HOCSINH
+SET
+    MAHS = @MAHS
+  , HOTEN = @HOTEN
+  , NGAYSINH = @NGAYSINH
+  , GIOITINH = @GIOITINH
+  , DCHI = @DIACHI
+  , NOISINH = @NOISINH
+WHERE MAHS = @MAHS
+END
+    ELSE PRINT N 'KHONG THỂ THÊM VÌ CHƯA ĐỦ 12 TUỔI'
+END
+    ELSE PRINT N 'ĐÃ SAI KHÓA NGOẠI'
+END
+    ELSE PRINT N 'ĐÃ SAI KHÓA CHÍNH' go execute pro_HS_Ins '1234567'
+  , N 'Lê Hoàng Tâm'
+  , '2003-09-16'
+  , 1
+  , N 'Vĩnh Long'
+  , 'VL' execute pro_HS_update '123456789'
+  , N 'Lê Hoàng '
+  , '2003-06-15'
+  , 1
+  , N 'An Giang'
+  , 'AG'
+SELECT
+    *
+FROM HOCSINH
+ORDER BY
+    MAHS --CÂU 8
+ALTER PROCEDURE pro_HS_ins_output @MAHS nvarchar(15)
+  , @HOTEN nvarchar(50)
+  , @NGAYSINH date
+  , @GIOITINH BIT
+  , @DIACHI nvarchar(100)
+  , @NOISINH nvarchar(10)
+  , @THONGBAO nvarchar(100) OUTPUT AS --Kiểm tra PK ( Không đc bỏ trống )
+IF (@MAHS <> ''
+AND NOT (EXISTS (
+SELECT
+    *
+FROM HOCSINH
+WHERE MAHS = @MAHS)))
+BEGIN --Kiểm tra  FK()
+IF (EXISTS (
+SELECT
+    MAT
+FROM TINH
+WHERE MAT = @NOISINH))
+BEGIN --Kiem tra CHECK
+IF (@NGAYSINH <> ''
+AND YEAR(GETDATE()) - YEAR(@NGAYSINH) > 12)
+BEGIN
+
+INSERT INTO HOCSINH (
+    MAHS
+  , HOTEN
+  , NGAYSINH
+  , GIOITINH
+  , DCHI
+  , NOISINH
+)
+VALUES
+    (@MAHS, @HOTEN, @NGAYSINH, @GIOITINH, @DIACHI, @NOISINH)
+SET
+    @THONGBAO = N 'THÊM THÀNH CÔNG'
+END
+    ELSE
+SET
+    @THONGBAO = N 'CHƯA ĐỦ 12 TUỔI'
+END
+    ELSE
+SET
+    @THONGBAO = N 'ĐÃ SAI KHÓA NGOẠI'
+END
+    ELSE
+SET
+    @THONGBAO = N 'ĐÃ SAI KHÓA CHÍNH' go DECLARE @THONGBAO nvarchar(100);
+EXECUTE pro_HS_ins_output '123467'
+  , N 'Lê Hoàng Tâm'
+  , '2003-09-16'
+  , 1
+  , N 'Vĩnh Long'
+  , 'VL'
+  , @THONGBAO OUTPUT
+SELECT
+    @THONGBAO go --CÂU 9
+ALTER PROCEDURE pro_GV_ins_output @MAGV varchar(15)
+  , @HOTEN nvarchar(100)
+  , @NGAYSINH date
+  , @GIOITINH bit
+  , @DCHI nvarchar(100)
+  , @SDTGV varchar(10)
+  , @EMAIL nvarchar(100)
+  , @NGAYDBGD date
+  , @MATRUONG varchar(15)
+  , @MATD varchar(10)
+  , @MACM varchar(10)
+  , @THONGBAO nvarchar(100) OUTPUT AS --Kiem tra PK
+IF (@MAGV <> ''
+AND NOT (EXISTS (
+SELECT
+    *
+FROM GIAOVIEN
+WHERE MAGV = @MAGV)))
+BEGIN -- Kiểm tra FK: MATRUONG, MATD, MACM phải tồn tại trong các bảng TRUONG, TRINHDO, CHUYENMON
+IF (EXISTS (
+SELECT
+    MATRUONG
+FROM TRUONG
+WHERE MATRUONG = @MATRUONG)
+AND EXISTS (
+SELECT
+    MaTD
+FROM TRINHDO
+WHERE MaTD = @MATD)
+AND EXISTS (
+SELECT
+    MACM
+FROM CHUYENMON
+WHERE MACM = @MACM))
+BEGIN --Kiểm tra điều kiện hợp lệ: HOTEN không để trống 
+IF (@HOTEN <> '')
+BEGIN --Tuổi giáo viên trên 22 tuổi
+IF (YEAR(GETDATE()) - YEAR(@NGAYSINH) >= 22)
+BEGIN
+
+INSERT INTO GIAOVIEN (
+    MAGV
+  , HOTEN
+  , NGAYSINH
+  , GIOITINH
+  , DCHI
+  , SDTGV
+  , EMAIL
+  , NGAYDBGD
+  , MATRUONG
+  , MATD
+  , MACM
+)
+VALUES
+    (@MAGV, @HOTEN, @NGAYSINH, @GIOITINH, @DCHI, @SDTGV, @EMAIL, @NGAYDBGD, @MATRUONG, @MATD, @MACM)
+SET
+    @THONGBAO = N 'THÊM THÀNH CÔNG'
+END
+    ELSE
+SET
+    @THONGBAO = N 'TUỔI GIÁO VIÊN KHÔNG HỢP LỆ'
+END
+    ELSE
+SET
+    @THONGBAO = N 'TÊN GIÁO VIÊN KHÔNG ĐƯỢC BỎ TRỐNG'
+END
+    ELSE
+SET
+    @THONGBAO = N 'ĐÃ SAI KHÓA NGOẠI'
+END
+    ELSE
+SET
+    @THONGBAO = N 'THÊM THẤT BẠI' GO DECLARE @THONGBAO nvarchar(100);
+EXECUTE pro_GV_ins_output 'GVTEST1'
+  , N 'Nguyễn Thanh Tuấn'
+  , '1989-5-4'
+  , 1
+  , N 'Vĩnh Long'
+  , '03533416459'
+  , 'thanhtuan@gmail.com'
+  , '2003-1-9'
+  , 'GDTXVL'
+  , 'DH'
+  , 'CMTN'
+  , @THONGBAO OUTPUT
+SELECT
+    @THONGBAO go --CÂU 10
+CREATE PROCEDURE pro_TRUONG_delete @MATRUONG varchar(15)
+  , @THONGBAO nvarchar(100) OUTPUT AS
+BEGIN IF (@MATRUONG <> '')
+BEGIN IF EXISTS (
+SELECT
+    *
+FROM GIAOVIEN
+WHERE MATRUONG = @MATRUONG)
+BEGIN
+
+DELETE
+FROM TRUONG
+WHERE MATRUONG = @MATRUONG;
+
+SET
+    @THONGBAO = N 'XÓA THÀNH CÔNG';
+
+END
+    ELSE
+SET
+    @THONGBAO = N 'MÃ TRƯỜNG CHƯA TỒN TẠI';
+
+END
+    ELSE
+SET
+    @THONGBAO = N 'KHÔNG ĐƯỢC ĐỂ RỖNG';
+
+END GO DECLARE @THONGBAO nvarchar(100);
+EXECUTE pro_TRUONG_delete 'THPTNHT'
+  , @THONGBAO OUTPUT
+SELECT
+    @THONGBAO go
+SELECT
+    *
+FROM TRUONG --DELETE TỰ ĐỘNG PHÁT SINH TABLE DELETED (CHỨA CÁC DÒNG DỮ LIỆU CHUẨN BỊ XÓA)
+ --INSERT: TỰ ĐỘNG PHÁT SINH TABLE INSERTED( CHỨA CÁC DÒNG DỮ LIỆU CBI THÊM)
+ --UPDATE: TỰ ĐỘNG PHÁT SINH TABLE DELETED AND INSERTED ( DELETED CHỨA DỮ LIỆU CŨ, INSERTED CHỨ DỮ LIỆU MỚI
+ --NGĂN CHẶN VIỆC INSERT, DELETE, UPDATE BẰNG CÂU LỆNH ROLLBACK TRANSACTION
+ -- TỰ ĐỘNG CẬP NHẬP XẾP LOẠI KHI DIEMCN BỊ THAY ĐỔI
+ALTER TRIGGER TRI_HOCBA_UPDATE ON HOCBA AFTER UPDATE AS
+BEGIN --KHI CẬP NHẬP SẾP LOẠI --> INSERTED
+ --TỰ ĐỘNG CẬP NHẬT XEPLOAI -KEM-YEU-TB-KHA-GIOI
+UPDATE HOCBA
+SET
+    XEPLOAI = CASE
+                  WHEN inserted.DIEMCN < 2
+                  THEN N 'Kém'
+                  WHEN inserted.DIEMCN < 3.5
+                  THEN N 'Yếu'
+                  WHEN inserted.DIEMCN < 5
+                  THEN N 'Trung Bình'
+                  WHEN inserted.DIEMCN < 6.5
+                  THEN N 'Khá'
+                  ELSE N 'Giỏi'
+              END
+FROM inserted
+WHERE inserted.MAHS = HOCBA.MAHS
+  AND inserted.HK_NH = HOCBA.HK_NH
+END --Câu 11:
+CREATE TRIGGER TRI_KQHTMHHK_UPDATE ON DIEMMH AFTER UPDATE AS
+BEGIN
+
+UPDATE DIEMMH
+SET
+    DiemCN = (inserted.DiemHK1 + inserted.DiemHK2) / 2 FROM inserted
+WHERE inserted.MAHS = DIEMMH.MAHS
+  AND inserted.MAMON = DIEMMH.MAMON
+  AND inserted.HK_NH = DIEMMH.HK_NH
+END --Câu 12
+CREATE TRIGGER TRI_DIEMMH_UPDATE ON DIEMMH AFTER UPDATE AS
+BEGIN IF
+UPDATE (DIEMCN)
+BEGIN
+
+UPDATE HOCBA
+SET
+    DIEMCN = (
+SELECT
+    AVG(DIEMCN)
+FROM DIEMMH
+WHERE DIEMMH.MAHS = HOCBA.MAHS) FROM HOCBA
+JOIN inserted ON HOCBA.MAHS = inserted.MAHS
+END
+END
