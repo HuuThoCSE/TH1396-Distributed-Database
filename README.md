@@ -45,5 +45,5 @@ SELECT MAGV FROM GIAOVIEN
 
 # Trigger
 ```SQL
-FROM inserted
+FROM inserted i
 ```
