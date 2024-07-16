@@ -44,8 +44,8 @@ SELECT MAGV FROM GIAOVIEN
 ```
 
 ## Tạo ràng buộc
-- Tạo liên kết trong giao diện Diagram
-- Vào bảng sau đó Design nó, rùi lưu lại
+- Bước 1: Tạo liên kết trong giao diện Diagram
+- Bước 2: Vào bảng sau đó Design nó, rùi lưu lại
 
 # Trigger
 ```SQL
