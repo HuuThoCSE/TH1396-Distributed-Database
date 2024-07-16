@@ -92,6 +92,45 @@ BEGIN
 END
 GO
 ```
+
+## Thêm, xóa, sửa
+```SQL
+--Phòng ban
+CREATE TRIGGER TRG_PB_INSERT
+   ON  PHONGBAN
+   AFTER INSERT
+AS 
+BEGIN
+	if @@NESTLEVEL>1
+		return
+	insert into [LINK_SV2_SV1].QLDA.[dbo].PHONGBAN (MAPB,TENPB,EMail,SDT)
+	select * from inserted
+END
+GO
+CREATE TRIGGER TRG_PB_UPDATE
+   ON  PHONGBAN
+   AFTER UPDATE
+AS 
+BEGIN
+	delete [LINK_SV2_SV1].QLDA.[dbo].PHONGBAN where MAPB in (select MAPB from inserted)
+	insert into [LINK_SV2_SV1].QLDA.[dbo].PHONGBAN (MAPB,TENPB,EMail,SDT)
+	select * from inserted
+END
+GO
+CREATE TRIGGER TRG_PB_DELETE
+   ON  PHONGBAN
+   AFTER DELETE
+AS 
+BEGIN
+	if @@NESTLEVEL>1
+		return
+	delete PHONGBAN where MAPB in (select MAPB from deleted)
+	delete [LINK_SV2_SV1].QLDA.[dbo].PHONGBAN where MAPB in (select MAPB from deleted)
+END
+GO
+
+```
+
 ## Kiểm tra xem trigger đang được kích hoạt ở mức lồng nhau nào.
 ```SQL
 IF @@NEXTLEVEL > 1
