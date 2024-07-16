@@ -92,6 +92,12 @@ BEGIN
 END
 GO
 ```
+## Kiểm tra xem trigger đang được kích hoạt ở mức lồng nhau nào.
+```SQL
+IF @@NEXTLEVEL > 1
+   return 
+```
+
 ## Dùng ngắn
 ```SQL
 FROM inserted i
