@@ -47,7 +47,38 @@ SELECT MAGV FROM GIAOVIEN
 - Bước 1: Tạo liên kết trong giao diện Diagram
 - Bước 2: Vào bảng sau đó Design nó, rùi lưu lại
 
+# PROC
+```SQL
+
+```
+
 # Trigger
+```SQL
+CREATE TRIGGER CheckWrong
+   ON BANGDIEM
+   AFTER INSERT, UPDATE
+AS 
+BEGIN
+	SET NOCOUNT ON;
+
+	UPDATE BANGDIEM
+	SET DIEM = CASE
+			WHEN inserted.DIEM < 0 THEN 0
+			WHEN inserted.DIEM > 10 THEN 10
+			ELSE inserted.DIEM
+		END,
+		LAN = CASE
+			WHEN inserted.LAN > 2 THEN 2
+			ELSE inserted.LAN
+		END
+	FROM inserted
+	WHERE BANGDIEM.MASV = inserted.MASV AND
+			BANGDIEM.MAMH = inserted.MAMH AND
+			BANGDIEM.NGAYTHI = inserted.NGAYTHI
+END
+GO
+```
+## Dùng ngắn
 ```SQL
 FROM inserted i
 ```
