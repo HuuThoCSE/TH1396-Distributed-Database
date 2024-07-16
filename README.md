@@ -93,7 +93,7 @@ END
 GO
 ```
 
-## Thêm, xóa, sửa
+## Thêm, xóa, sửa trên site
 ```SQL
 --Phòng ban
 CREATE TRIGGER TRG_PB_INSERT
