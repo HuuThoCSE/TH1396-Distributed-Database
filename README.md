@@ -43,6 +43,10 @@ EXCEPT
 SELECT MAGV FROM GIAOVIEN
 ```
 
+## Tạo ràng buộc
+- Tạo liên kết trong giao diện Diagram
+- Vào bảng sau đó Design nó, rùi lưu lại
+
 # Trigger
 ```SQL
 FROM inserted i
