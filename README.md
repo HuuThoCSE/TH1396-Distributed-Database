@@ -49,7 +49,21 @@ SELECT MAGV FROM GIAOVIEN
 
 # PROC
 ```SQL
+REATE PROC ThemMH
+	@MASV nvarchar(8)
+AS
+BEGIN 
+	DECLARE @NgayThi DATETIME = GETDATE();
+	DECLARE @LanThi INT = 1;
 
+	-- Chèn các môn học hiện có cho sinh vien bản điểm
+	INSERT INTO BANGDIEM (MASV, MAMH, LAN, NGAYTHI, DIEM, BAITHI)
+	SELECT @MASV, MAMH, @LanThi, @NgayThi, NULL, NULL
+	FROM MONHOC
+
+END;
+
+EXEC ThemMH '002'
 ```
 
 # Trigger
