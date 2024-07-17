@@ -1,0 +1,51 @@
+Vào Admin
+Nội dung đề thi
+ 
+Phần 1 :CSDL
+1.1 Tạo CSDL 
+1.2 Thực thi CSDL
+1.3 Restore
+1.4 Hoàn chỉnh CSDL : 100% ( Khác Data Type , Data , Khóa ngoại chưa PK #Dữ liệu không bị trùng)
+
+Phần 2 :Quản trị CSDL
+2.1 Tạo Tài Khoản : Tên , CSDL , Quyền , Đừng để khi connect
+2.2 PROCEDURE : Thêm dữ liệu
+2.3 FUNCTION  : T ,S ,X Dữ liệu: Ktra RBTV (PR, FK , CK , NULL, DEFAUL )
+2.4 Trigger   : Đồng bộ : 100% có
+2.5 Cấu hình HQTCSDL cho phép kết nối từ xa 
+2.6 LINKED SERVER : từ nơi đang thao tác đến  --> nơi chứa CSDL
+
+Phần 3: Phân tán và đồng bộ
+3.1 Lệnh
+3.1.1 Phân tán Select => Đầy đủ ; Độc lập ==> M1
+--Số lệnh Select : số Table trong CSDL
+--Tạo RBTV: PK, FK, CHECK
+Trình tự tạo table : Table chứa M1 ==> Table SĐ LK
+3.1.2 Đồng bộ Trigger
+3.1.2.1 Từ server --> site
+	==> 1 Table
+		Linked Server từ Server --> Site (Site cấu hình KN từ xa)
+		Create trigger on table Server
+		Tạo 3 Tigger AFTER DELETE , INSERT , DELETE
+3.1.2.2 Từ Site --> Server
+	==> 1 Table
+		Linked Server từ Site --> Server (Site cấu hình KN từ xa)
+		Create trigger on table Site
+		Tạo 3 Tigger AFTER DELETE , INSERT , DELETE
+8.0đ <=
+
+3.2 Replication M2 Publication ; Scription
+M1 ; M2 ; Đảm bảo CSDL 2 SERVER Độc Lập
+3.2.1 Ktra tên HQTCSDL có là tên thật
+3.2.2 Tạo và cấu hình thư mục ĐB
+3.2.3 Chỉ định thư mục ĐB cho HQTCSDL  ==> Sai thì ko có phân tán gì hết hehe!
+3.2.4 Tạo Publication
+--Chọn Table
+--Filter row : M2 
+--Tạo lịch đồng bộ : 1--5 phút ;
+3.2.5 Tạo Subscription 
+
+
+
+
+
